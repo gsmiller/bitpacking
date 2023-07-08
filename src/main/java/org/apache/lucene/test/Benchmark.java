@@ -36,7 +36,6 @@ public class Benchmark {
   private int[] decodeIn1 = new int[8];
   private byte[] decodeIn2 = new byte[32];
   private int[] decodeOut = new int[128];
-  private byte[] decodeOut2 = new byte[128];
 
   private int[] ints;
   private int[] intsOutput = new int[32];
@@ -98,7 +97,7 @@ public class Benchmark {
 
   @org.openjdk.jmh.annotations.Benchmark
   public int[] decode2SimdPack2() throws IOException {
-    SimdBitPacking2.simdUnpack(decodeIn2, decodeOut2, 2);
+    SimdBitPacking2.simdUnpack(decodeIn2, decodeOut, 2);
     return decodeOut;
   }
 
