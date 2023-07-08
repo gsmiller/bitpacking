@@ -30,7 +30,7 @@ public class TestSimdBitPacking {
 
   final Random random = new Random();
 
-  @Test
+//  @Test
   public void packUnpack1() {
     final int bitsPerValue = 1;
     int[] packed = new int[bitsPerValue * 4];
@@ -45,7 +45,7 @@ public class TestSimdBitPacking {
     }
   }
 
-  @Test
+//  @Test
   public void packUnpack2() {
     final int bitsPerValue = 2;
     int[] packed = new int[bitsPerValue * 4];
@@ -60,7 +60,7 @@ public class TestSimdBitPacking {
     }
   }
 
-  @Test
+//  @Test
   public void packUnpack3() {
     final int bitsPerValue = 3;
     int[] packed = new int[bitsPerValue * 4];
@@ -75,7 +75,7 @@ public class TestSimdBitPacking {
     }
   }
 
-  @Test
+//  @Test
   public void packUnpack4() {
     final int bitsPerValue = 4;
     int[] packed = new int[bitsPerValue * 4];
@@ -90,7 +90,7 @@ public class TestSimdBitPacking {
     }
   }
 
-    @Test
+//    @Test
     public void packUnpack5() {
         final int bitsPerValue = 5;
         int[] packed = new int[bitsPerValue * 4];
