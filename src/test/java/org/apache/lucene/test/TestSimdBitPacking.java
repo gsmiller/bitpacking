@@ -68,9 +68,13 @@ public class TestSimdBitPacking {
             int[] input = IntStream.range(0, 128).map(x -> random.nextInt(1 << bitsPerValue)).toArray();
             int[] copy = Arrays.copyOf(input, input.length);
             SimdBitPacking2.simdPack(input, packed, bitsPerValue);
-            int[] unpacked = new int[128];
+            byte[] unpacked = new byte[128];
             SimdBitPacking2.simdUnpack(packed, unpacked, bitsPerValue);
-            assertArrayEquals(input, unpacked);
+            int[] unpackedAsInts = new int[128];
+            for (int j = 0; j < 128; j++) {
+                unpackedAsInts[j] = unpacked[j];
+            }
+            assertArrayEquals(input, unpackedAsInts);
             assertArrayEquals(input, copy);
         }
     }

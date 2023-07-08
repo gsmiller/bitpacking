@@ -128,7 +128,7 @@ public class SimdBitPacking2 {
   }
 
   // void simdunpack(const __m128i *in, uint32_t *out, const uint32_t bit) {
-  static void simdUnpack(byte[] input, int[] output, int bit) {
+  static void simdUnpack(byte[] input, byte[] output, int bit) {
     switch (bit) {
       case 1: return;
       case 2: SIMD_fastUnpack2(input, output); return;
@@ -569,60 +569,37 @@ public class SimdBitPacking2 {
   }
 
   // __SIMD_fastunpack2_32
-  static void SIMD_fastUnpack2(byte[] input, int[] output) {
+  static void SIMD_fastUnpack2(byte[] input, byte[] output) {
     ByteVector inVec = ByteVector.fromArray(BYTE_SPECIES_128, input, 0);
     ByteVector outVec;
     int outOff = 0;
     final byte mask = (1 << 2) - 1;
 
     outVec = inVec.and(mask);
-    outVec.convertShape(VectorOperators.B2I, SPECIES_128, 0).reinterpretAsInts().intoArray(output, outOff);
-    outVec.convertShape(VectorOperators.B2I, SPECIES_128, 1).reinterpretAsInts().intoArray(output, outOff+=4);
-    outVec.convertShape(VectorOperators.B2I, SPECIES_128, 2).reinterpretAsInts().intoArray(output, outOff+=4);
-    outVec.convertShape(VectorOperators.B2I, SPECIES_128, 3).reinterpretAsInts().intoArray(output, outOff+=4);
+    outVec.intoArray(output, outOff);
 
     outVec = inVec.lanewise(VectorOperators.LSHR, 2).and(mask);
-    outVec.convertShape(VectorOperators.B2I, SPECIES_128, 0).reinterpretAsInts().intoArray(output, outOff+=4);
-    outVec.convertShape(VectorOperators.B2I, SPECIES_128, 1).reinterpretAsInts().intoArray(output, outOff+=4);
-    outVec.convertShape(VectorOperators.B2I, SPECIES_128, 2).reinterpretAsInts().intoArray(output, outOff+=4);
-    outVec.convertShape(VectorOperators.B2I, SPECIES_128, 3).reinterpretAsInts().intoArray(output, outOff+=4);
+    outVec.intoArray(output, outOff+=16);
 
     outVec = inVec.lanewise(VectorOperators.LSHR, 4).and(mask);
-    outVec.convertShape(VectorOperators.B2I, SPECIES_128, 0).reinterpretAsInts().intoArray(output, outOff+=4);
-    outVec.convertShape(VectorOperators.B2I, SPECIES_128, 1).reinterpretAsInts().intoArray(output, outOff+=4);
-    outVec.convertShape(VectorOperators.B2I, SPECIES_128, 2).reinterpretAsInts().intoArray(output, outOff+=4);
-    outVec.convertShape(VectorOperators.B2I, SPECIES_128, 3).reinterpretAsInts().intoArray(output, outOff+=4);
+    outVec.intoArray(output, outOff+=16);
 
     outVec = inVec.lanewise(VectorOperators.LSHR, 6).and(mask);
-    outVec.convertShape(VectorOperators.B2I, SPECIES_128, 0).reinterpretAsInts().intoArray(output, outOff+=4);
-    outVec.convertShape(VectorOperators.B2I, SPECIES_128, 1).reinterpretAsInts().intoArray(output, outOff+=4);
-    outVec.convertShape(VectorOperators.B2I, SPECIES_128, 2).reinterpretAsInts().intoArray(output, outOff+=4);
-    outVec.convertShape(VectorOperators.B2I, SPECIES_128, 3).reinterpretAsInts().intoArray(output, outOff+=4);
+    outVec.intoArray(output, outOff+=16);
 
     inVec = ByteVector.fromArray(BYTE_SPECIES_128, input, 16);
+
     outVec = inVec.and(mask);
-    outVec.convertShape(VectorOperators.B2I, SPECIES_128, 0).reinterpretAsInts().intoArray(output, outOff+=4);
-    outVec.convertShape(VectorOperators.B2I, SPECIES_128, 1).reinterpretAsInts().intoArray(output, outOff+=4);
-    outVec.convertShape(VectorOperators.B2I, SPECIES_128, 2).reinterpretAsInts().intoArray(output, outOff+=4);
-    outVec.convertShape(VectorOperators.B2I, SPECIES_128, 3).reinterpretAsInts().intoArray(output, outOff+=4);
+    outVec.intoArray(output, outOff+=16);
 
     outVec = inVec.lanewise(VectorOperators.LSHR, 2).and(mask);
-    outVec.convertShape(VectorOperators.B2I, SPECIES_128, 0).reinterpretAsInts().intoArray(output, outOff+=4);
-    outVec.convertShape(VectorOperators.B2I, SPECIES_128, 1).reinterpretAsInts().intoArray(output, outOff+=4);
-    outVec.convertShape(VectorOperators.B2I, SPECIES_128, 2).reinterpretAsInts().intoArray(output, outOff+=4);
-    outVec.convertShape(VectorOperators.B2I, SPECIES_128, 3).reinterpretAsInts().intoArray(output, outOff+=4);
+    outVec.intoArray(output, outOff+=16);
 
     outVec = inVec.lanewise(VectorOperators.LSHR, 4).and(mask);
-    outVec.convertShape(VectorOperators.B2I, SPECIES_128, 0).reinterpretAsInts().intoArray(output, outOff+=4);
-    outVec.convertShape(VectorOperators.B2I, SPECIES_128, 1).reinterpretAsInts().intoArray(output, outOff+=4);
-    outVec.convertShape(VectorOperators.B2I, SPECIES_128, 2).reinterpretAsInts().intoArray(output, outOff+=4);
-    outVec.convertShape(VectorOperators.B2I, SPECIES_128, 3).reinterpretAsInts().intoArray(output, outOff+=4);
+    outVec.intoArray(output, outOff+=16);
 
     outVec = inVec.lanewise(VectorOperators.LSHR, 6).and(mask);
-    outVec.convertShape(VectorOperators.B2I, SPECIES_128, 0).reinterpretAsInts().intoArray(output, outOff+=4);
-    outVec.convertShape(VectorOperators.B2I, SPECIES_128, 1).reinterpretAsInts().intoArray(output, outOff+=4);
-    outVec.convertShape(VectorOperators.B2I, SPECIES_128, 2).reinterpretAsInts().intoArray(output, outOff+=4);
-    outVec.convertShape(VectorOperators.B2I, SPECIES_128, 3).reinterpretAsInts().intoArray(output, outOff+=4);
+    outVec.intoArray(output, outOff+=16);
   }
 
   // __SIMD_fastunpack3_32
