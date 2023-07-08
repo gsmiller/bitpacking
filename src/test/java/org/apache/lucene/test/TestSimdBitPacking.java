@@ -60,6 +60,21 @@ public class TestSimdBitPacking {
     }
   }
 
+    @Test
+    public void packUnpack2_2() {
+        final int bitsPerValue = 2;
+        byte[] packed = new byte[bitsPerValue * 16];
+        for (int i = 0; i < 100; i++) {
+            int[] input = IntStream.range(0, 128).map(x -> random.nextInt(1 << bitsPerValue)).toArray();
+            int[] copy = Arrays.copyOf(input, input.length);
+            SimdBitPacking2.simdPack(input, packed, bitsPerValue);
+            int[] unpacked = new int[128];
+            SimdBitPacking2.simdUnpack(packed, unpacked, bitsPerValue);
+            assertArrayEquals(input, unpacked);
+            assertArrayEquals(input, copy);
+        }
+    }
+
 //  @Test
   public void packUnpack3() {
     final int bitsPerValue = 3;
