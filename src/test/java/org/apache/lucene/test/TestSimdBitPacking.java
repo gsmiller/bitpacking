@@ -60,17 +60,23 @@ public class TestSimdBitPacking {
     }
   }
 
-//    @Test
+    @Test
     public void packUnpack2_2() {
         final int bitsPerValue = 2;
-        byte[] packed = new byte[bitsPerValue * 16];
+        int[] packed = new int[bitsPerValue * 4];
         for (int i = 0; i < 100; i++) {
+            int base = random.nextInt(100);
             int[] input = IntStream.range(0, 128).map(x -> random.nextInt(1 << bitsPerValue)).toArray();
             int[] copy = Arrays.copyOf(input, input.length);
-            SimdBitPacking2.simdPack(input, packed, bitsPerValue);
+            int[] expected = new int[128];
+            expected[0] = input[0] + base;
+            for (int j = 1; j < 128; j++) {
+                expected[j] = expected[j - 1] + input[j];
+            }
+            SimdBitPacking2.SIMD_fastPack2(input, packed);
             int[] unpacked = new int[128];
-            SimdBitPacking2.simdUnpack(packed, unpacked, bitsPerValue);
-            assertArrayEquals(input, unpacked);
+            SimdBitPacking2.SIMD_fastUnpackAndPrefixDecode2(base, packed, unpacked);
+            assertArrayEquals(expected, unpacked);
             assertArrayEquals(input, copy);
         }
     }

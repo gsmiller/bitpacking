@@ -36,6 +36,7 @@ public class Benchmark {
   private int[] decodeIn1 = new int[8];
   private byte[] decodeIn2 = new byte[32];
   private int[] decodeOut = new int[128];
+  private int base;
 
   private int[] ints;
   private int[] intsOutput = new int[32];
@@ -47,7 +48,7 @@ public class Benchmark {
   public void init() {
     ints = new int[128];
     for (int i = 0; i < 128; i++) {
-      ints[i] = ThreadLocalRandom.current().nextInt();
+      ints[i] = ThreadLocalRandom.current().nextInt(100);
     }
     longs = new long[128];
     for (int i = 0; i < 128; i++) {
@@ -55,21 +56,15 @@ public class Benchmark {
     }
     encodeIn = ints;
     SimdBitPacking.simdPack(encodeIn, decodeIn1, 2);
-    SimdBitPacking2.simdPack(encodeIn, decodeIn2, 2);
-
+//    SimdBitPacking2.simdPack(encodeIn, decodeIn2, 2);
+    base = ThreadLocalRandom.current().nextInt(1000);
   }
-//
-//  @org.openjdk.jmh.annotations.Benchmark
-//  public long[] encode1ForUtil() throws IOException {
-//     forUtil.encode(longs, 1, longs);
-//     return longs;
-//  }
-//
-//  @org.openjdk.jmh.annotations.Benchmark
-//  public int[] encode1SimdPack() throws IOException {
-//    SimdBitPacking.simdPack(ints, intsOutput, 1);
-//    return intsOutput;
-//  }
+
+  @org.openjdk.jmh.annotations.Benchmark
+  public int[] decodePrefixSum2() throws IOException {
+    SimdBitPacking2.SIMD_fastUnpackAndPrefixDecode2(base, encodeIn, encodeOut1);
+    return encodeOut1;
+  }
 
 //  @org.openjdk.jmh.annotations.Benchmark
 //  public long[] encode2ForUtil() throws IOException {
@@ -77,68 +72,27 @@ public class Benchmark {
 //    return longs;
 //  }
 
-  @org.openjdk.jmh.annotations.Benchmark
-  public int[] encode2SimdPack() throws IOException {
-    SimdBitPacking.simdPack(encodeIn, encodeOut1, 2);
-    return encodeOut1;
-  }
-
-  @org.openjdk.jmh.annotations.Benchmark
-  public byte[] encode2SimdPack2() throws IOException {
-    SimdBitPacking2.simdPack(encodeIn, encodeOut2, 2);
-    return encodeOut2;
-  }
-
-  @org.openjdk.jmh.annotations.Benchmark
-  public int[] decode2SimdPack() throws IOException {
-    SimdBitPacking.simdUnpack(decodeIn1, decodeOut, 2);
-    return decodeOut;
-  }
-
-  @org.openjdk.jmh.annotations.Benchmark
-  public int[] decode2SimdPack2() throws IOException {
-    SimdBitPacking2.simdUnpack(decodeIn2, decodeOut, 2);
-    return decodeOut;
-  }
-
-//
 //  @org.openjdk.jmh.annotations.Benchmark
-//  public long[] encode3ForUtil() throws IOException {
-//    forUtil.encode(longs, 3, longs);
-//    return longs;
-//  }
-//
-//  @org.openjdk.jmh.annotations.Benchmark
-//  public int[] encode3SimdPack() throws IOException {
-//    SimdBitPacking.simdPack(ints, intsOutput, 3);
-//    return intsOutput;
-//  }
-//
-//  @org.openjdk.jmh.annotations.Benchmark
-//  public long[] encode4ForUtil() throws IOException {
-//    forUtil.encode(longs, 4, longs);
-//    return longs;
-//  }
-//
-//  @org.openjdk.jmh.annotations.Benchmark
-//  public int[] encode4SimdPack() throws IOException {
-//    SimdBitPacking.simdPack(ints, intsOutput, 4);
-//    return intsOutput;
-//  }
-//
-//  @org.openjdk.jmh.annotations.Benchmark
-//  public long[] encode5ForUtil() throws IOException {
-//    forUtil.encode(longs, 5, longs);
-//    return longs;
-//  }
-//
-//  @org.openjdk.jmh.annotations.Benchmark
-//  public int[] encode5SimdPack() throws IOException {
-//    SimdBitPacking.simdPack(ints, intsOutput, 5);
-//    return intsOutput;
+//  public int[] encode2SimdPack() throws IOException {
+//    SimdBitPacking.simdPack(encodeIn, encodeOut1, 2);
+//    return encodeOut1;
 //  }
 
-  // TODO decode/unpack
-  // TODO: 6 .. 32
+//  @org.openjdk.jmh.annotations.Benchmark
+//  public byte[] encode2SimdPack2() throws IOException {
+//    SimdBitPacking2.simdPack(encodeIn, encodeOut2, 2);
+//    return encodeOut2;
+//  }
 
+//  @org.openjdk.jmh.annotations.Benchmark
+//  public int[] decode2SimdPack() throws IOException {
+//    SimdBitPacking.simdUnpack(decodeIn1, decodeOut, 2);
+//    return decodeOut;
+//  }
+
+//  @org.openjdk.jmh.annotations.Benchmark
+//  public int[] decode2SimdPack2() throws IOException {
+////    SimdBitPacking2.simdUnpack(decodeIn2, decodeOut, 2);
+//    return decodeOut;
+//  }
 }
