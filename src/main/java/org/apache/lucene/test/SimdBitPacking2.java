@@ -179,8 +179,112 @@ public class SimdBitPacking2 {
     }
   }
 
+  static void SIMD_fastUnpack2(int[] input, int[] output) {
+    IntVector inVec = IntVector.fromArray(SPECIES_128, input, 0);
+    IntVector outVec;
+    int inOff = 0;
+    int outOff = 0;
+    final int mask = (1 << 2) - 1;
 
-  // __SIMD_fastunpack2_32
+    outVec = inVec.and(mask);
+    outVec.intoArray(output, outOff);
+
+    outVec = inVec.lanewise(VectorOperators.LSHR, 2).and(mask);
+    outVec.intoArray(output, outOff+=4);
+
+    outVec = inVec.lanewise(VectorOperators.LSHR, 4).and(mask);
+    outVec.intoArray(output, outOff+=4);
+
+    outVec = inVec.lanewise(VectorOperators.LSHR, 6).and(mask);
+    outVec.intoArray(output, outOff+=4);
+
+    outVec = inVec.lanewise(VectorOperators.LSHR, 8).and(mask);
+    outVec.intoArray(output, outOff+=4);
+
+    outVec = inVec.lanewise(VectorOperators.LSHR, 10).and(mask);
+    outVec.intoArray(output, outOff+=4);
+
+    outVec = inVec.lanewise(VectorOperators.LSHR, 12).and(mask);
+    outVec.intoArray(output, outOff+=4);
+
+    outVec = inVec.lanewise(VectorOperators.LSHR, 14).and(mask);
+    outVec.intoArray(output, outOff+=4);
+
+    outVec = inVec.lanewise(VectorOperators.LSHR, 16).and(mask);
+    outVec.intoArray(output, outOff+=4);
+
+    outVec = inVec.lanewise(VectorOperators.LSHR, 18).and(mask);
+    outVec.intoArray(output, outOff+=4);
+
+    outVec = inVec.lanewise(VectorOperators.LSHR, 20).and(mask);
+    outVec.intoArray(output, outOff+=4);
+
+    outVec = inVec.lanewise(VectorOperators.LSHR, 22).and(mask);
+    outVec.intoArray(output, outOff+=4);
+
+    outVec = inVec.lanewise(VectorOperators.LSHR, 24).and(mask);
+    outVec.intoArray(output, outOff+=4);
+
+    outVec = inVec.lanewise(VectorOperators.LSHR, 26).and(mask);
+    outVec.intoArray(output, outOff+=4);
+
+    outVec = inVec.lanewise(VectorOperators.LSHR, 28).and(mask);
+    outVec.intoArray(output, outOff+=4);
+
+    outVec = inVec.lanewise(VectorOperators.LSHR, 30).and(mask);
+    outVec.intoArray(output, outOff+=4);
+
+    inVec = IntVector.fromArray(SPECIES_128, input, inOff+=4);
+
+    outVec = inVec.and(mask);
+    outVec.intoArray(output, outOff+=4);
+
+    outVec = inVec.lanewise(VectorOperators.LSHR, 2).and(mask);
+    outVec.intoArray(output, outOff+=4);
+
+    outVec = inVec.lanewise(VectorOperators.LSHR, 4).and(mask);
+    outVec.intoArray(output, outOff+=4);
+
+    outVec = inVec.lanewise(VectorOperators.LSHR, 6).and(mask);
+    outVec.intoArray(output, outOff+=4);
+
+    outVec = inVec.lanewise(VectorOperators.LSHR, 8).and(mask);
+    outVec.intoArray(output, outOff+=4);
+
+    outVec = inVec.lanewise(VectorOperators.LSHR, 10).and(mask);
+    outVec.intoArray(output, outOff+=4);
+
+    outVec = inVec.lanewise(VectorOperators.LSHR, 12).and(mask);
+    outVec.intoArray(output, outOff+=4);
+
+    outVec = inVec.lanewise(VectorOperators.LSHR, 14).and(mask);
+    outVec.intoArray(output, outOff+=4);
+
+    outVec = inVec.lanewise(VectorOperators.LSHR, 16).and(mask);
+    outVec.intoArray(output, outOff+=4);
+
+    outVec = inVec.lanewise(VectorOperators.LSHR, 18).and(mask);
+    outVec.intoArray(output, outOff+=4);
+
+    outVec = inVec.lanewise(VectorOperators.LSHR, 20).and(mask);
+    outVec.intoArray(output, outOff+=4);
+
+    outVec = inVec.lanewise(VectorOperators.LSHR, 22).and(mask);
+    outVec.intoArray(output, outOff+=4);
+
+    outVec = inVec.lanewise(VectorOperators.LSHR, 24).and(mask);
+    outVec.intoArray(output, outOff+=4);
+
+    outVec = inVec.lanewise(VectorOperators.LSHR, 26).and(mask);
+    outVec.intoArray(output, outOff+=4);
+
+    outVec = inVec.lanewise(VectorOperators.LSHR, 28).and(mask);
+    outVec.intoArray(output, outOff+=4);
+
+    outVec = inVec.lanewise(VectorOperators.LSHR, 30).and(mask);
+    outVec.intoArray(output, outOff+=4);
+  }
+
 //  static void SIMD_fastUnpack2(byte[] input, int[] output) {
 //    byte[] byteOut = new byte[128];
 //    ByteVector inVec = ByteVector.fromArray(BYTE_SPECIES_128, input, 0);

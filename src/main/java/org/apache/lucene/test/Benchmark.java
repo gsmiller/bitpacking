@@ -61,13 +61,12 @@ public class Benchmark {
     for (int i = 1; i < 128; i++) {
       deltas[i] = encodeIn[i] - encodeIn[i - 1];
     }
-//    SimdBitPacking.simdPack(encodeIn, decodeIn1, 2);
-    SimdBitPacking2.SIMD_fastPack2(deltas, decodeIn1);
-//    SimdBitPacking2.simdPack(encodeIn, decodeIn2, 2);
+//    SimdBitPacking2.SIMD_fastPack2(deltas, decodeIn1);
+    SimdBitPacking2.SIMD_fastPack2(encodeIn, decodeIn1);
     base = ThreadLocalRandom.current().nextInt(1000);
   }
 
-  @org.openjdk.jmh.annotations.Benchmark
+//  @org.openjdk.jmh.annotations.Benchmark
   public int[] decodePrefixSum2() throws IOException {
     SimdBitPacking2.SIMD_fastUnpackAndPrefixDecode2(base, decodeIn1, decodeOut);
     return encodeOut1;
@@ -91,11 +90,11 @@ public class Benchmark {
 //    return encodeOut2;
 //  }
 
-//  @org.openjdk.jmh.annotations.Benchmark
-//  public int[] decode2SimdPack() throws IOException {
-//    SimdBitPacking.simdUnpack(decodeIn1, decodeOut, 2);
-//    return decodeOut;
-//  }
+  @org.openjdk.jmh.annotations.Benchmark
+  public int[] decode2SimdPack() throws IOException {
+    SimdBitPacking.simdUnpack(decodeIn1, decodeOut, 2);
+    return decodeOut;
+  }
 
 //  @org.openjdk.jmh.annotations.Benchmark
 //  public int[] decode2SimdPack2() throws IOException {
