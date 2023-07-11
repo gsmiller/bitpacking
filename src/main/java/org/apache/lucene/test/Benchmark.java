@@ -48,21 +48,28 @@ public class Benchmark {
   public void init() {
     ints = new int[128];
     for (int i = 0; i < 128; i++) {
-      ints[i] = ThreadLocalRandom.current().nextInt(100);
+      ints[i] = ThreadLocalRandom.current().nextInt();
     }
     longs = new long[128];
     for (int i = 0; i < 128; i++) {
       longs[i] = ThreadLocalRandom.current().nextLong();
     }
     encodeIn = ints;
-    SimdBitPacking.simdPack(encodeIn, decodeIn1, 2);
+    int[] deltas = new int[128];
+    base = encodeIn[0];
+    deltas[0] = 0;
+    for (int i = 1; i < 128; i++) {
+      deltas[i] = encodeIn[i] - encodeIn[i - 1];
+    }
+//    SimdBitPacking.simdPack(encodeIn, decodeIn1, 2);
+    SimdBitPacking2.SIMD_fastPack2(deltas, decodeIn1);
 //    SimdBitPacking2.simdPack(encodeIn, decodeIn2, 2);
     base = ThreadLocalRandom.current().nextInt(1000);
   }
 
   @org.openjdk.jmh.annotations.Benchmark
   public int[] decodePrefixSum2() throws IOException {
-    SimdBitPacking2.SIMD_fastUnpackAndPrefixDecode2(base, encodeIn, encodeOut1);
+    SimdBitPacking2.SIMD_fastUnpackAndPrefixDecode2(base, decodeIn1, decodeOut);
     return encodeOut1;
   }
 
