@@ -16,9 +16,17 @@
  */
 package org.apache.lucene.test;
 
-import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Level;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Warmup;
 
-import java.io.IOException;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
@@ -30,75 +38,36 @@ import java.util.concurrent.TimeUnit;
 @Fork(value = 1, jvmArgsPrepend = {"--add-modules=jdk.incubator.vector"})
 public class Benchmark {
 
-  private int[] encodeIn = new int[128];
-  private int[] encodeOut1 = new int[8];
-  private byte[] encodeOut2 = new byte[32];
-  private int[] decodeIn1 = new int[8];
-  private byte[] decodeIn2 = new byte[32];
-  private int[] decodeOut = new int[128];
-  private int base;
+  private int[] ints = new int[64];
+  private int[] packed = new int[4];
 
-  private int[] ints;
-  private int[] intsOutput = new int[32];
-  private long[] longs;
-
-  final ForUtil forUtil = new ForUtil();
+  private int[] packOut = new int[4];
+  private int[] unpackOut = new int[64];
 
   @Setup(Level.Trial)
   public void init() {
     ints = new int[128];
     for (int i = 0; i < 128; i++) {
-      ints[i] = ThreadLocalRandom.current().nextInt();
+      ints[i] = ThreadLocalRandom.current().nextInt(4);
     }
-    longs = new long[128];
-    for (int i = 0; i < 128; i++) {
-      longs[i] = ThreadLocalRandom.current().nextLong();
-    }
-    encodeIn = ints;
-    int[] deltas = new int[128];
-    base = encodeIn[0];
-    deltas[0] = 0;
-    for (int i = 1; i < 128; i++) {
-      deltas[i] = encodeIn[i] - encodeIn[i - 1];
-    }
-//    SimdBitPacking2.SIMD_fastPack2(deltas, decodeIn1);
-    SimdBitPacking2.SIMD_fastPack2(encodeIn, decodeIn1);
-    base = ThreadLocalRandom.current().nextInt(1000);
+    Impl.packBasic(ints, packed);
   }
 
 //  @org.openjdk.jmh.annotations.Benchmark
-  public int[] decodePrefixSum2() throws IOException {
-    SimdBitPacking2.SIMD_fastUnpackAndPrefixDecode2(base, decodeIn1, decodeOut);
-    return encodeOut1;
+  public int[] packBasic() throws Exception {
+    Impl.packBasic(ints, packOut);
+    return packOut;
   }
 
 //  @org.openjdk.jmh.annotations.Benchmark
-//  public long[] encode2ForUtil() throws IOException {
-//    forUtil.encode(longs, 2, longs);
-//    return longs;
-//  }
-
-//  @org.openjdk.jmh.annotations.Benchmark
-//  public int[] encode2SimdPack() throws IOException {
-//    SimdBitPacking.simdPack(encodeIn, encodeOut1, 2);
-//    return encodeOut1;
-//  }
-
-//  @org.openjdk.jmh.annotations.Benchmark
-//  public byte[] encode2SimdPack2() throws IOException {
-//    SimdBitPacking2.simdPack(encodeIn, encodeOut2, 2);
-//    return encodeOut2;
-//  }
+  public int[] unpackBasic() throws Exception {
+    Impl.unpackBasic(packed, unpackOut);
+    return packOut;
+  }
 
   @org.openjdk.jmh.annotations.Benchmark
-  public int[] decode2SimdPack() throws IOException {
-    SimdBitPacking.simdUnpack(decodeIn1, decodeOut, 2);
-    return decodeOut;
+  public int[] unpackSimd() throws Exception {
+    Impl.unpackSimd(packed, unpackOut);
+    return packOut;
   }
-
-//  @org.openjdk.jmh.annotations.Benchmark
-//  public int[] decode2SimdPack2() throws IOException {
-////    SimdBitPacking2.simdUnpack(decodeIn2, decodeOut, 2);
-//    return decodeOut;
-//  }
 }
