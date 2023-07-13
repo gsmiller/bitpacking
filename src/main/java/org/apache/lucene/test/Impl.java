@@ -60,7 +60,7 @@ public class Impl {
     private static final byte[] scratchBytes = new byte[64 * 4];
     private static final int[] scatterMap = new int[16];
     static {
-        int upto = 3;
+        int upto = 0;
         for (int i = 0; i < 16; i++) {
             scatterMap[i] = upto;
             upto += 4;
@@ -107,7 +107,8 @@ public class Impl {
         int upto = 0;
         for (int shift = 0; shift < 8; shift += 2) {
             outVec = inVec.lanewise(VectorOperators.LSHR, shift).and(BYTE_MASK);
-            outVec.intoArray(out, upto, scatterMap, 0);
+//            outVec.intoArray(out, upto, scatterMap, 0);
+            outVec.intoArray(out, upto);
             upto += 64;
         }
     }

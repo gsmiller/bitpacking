@@ -19,6 +19,7 @@ package org.apache.lucene.test;
 import org.junit.Test;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.stream.IntStream;
@@ -108,6 +109,7 @@ public class TestImpl {
 
     private void asInts(byte[] bytes, int[] ints) {
         ByteBuffer buff = ByteBuffer.wrap(bytes);
+        buff.order(ByteOrder.LITTLE_ENDIAN);
         for (int i = 0; i < 64; i++) {
             ints[i] = buff.getInt();
         }
