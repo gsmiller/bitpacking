@@ -18,6 +18,7 @@ package org.apache.lucene.test;
 
 import org.junit.Test;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.stream.IntStream;
@@ -51,16 +52,64 @@ public class TestImpl {
         System.out.println("Seed: " + seed);
         Random random = new Random(seed);
         int[] packed = new int[4];
-        int[] unpacked = new int[64];
+        byte[] unpacked = new byte[64 * 4];
         for (int iter = 0; iter < 100; iter++) {
             int[] input = IntStream.range(0, 64).map(x -> random.nextInt(4)).toArray();
             int[] copy = Arrays.copyOf(input, input.length);
             Arrays.fill(packed, 0);
-            Arrays.fill(unpacked, 0);
+            Arrays.fill(unpacked, (byte) 0);
             Impl.packBasic(input, packed);
-            Impl.unpackSimd(packed, unpacked);
-            assertArrayEquals(input, unpacked);
+            byte[] rawBytes = new byte[64];
+            int upto = 0;
+            for (int i = 0; i < 32; i += 2) {
+                for (int j = 0; j < 4; j++) {
+                    rawBytes[upto] = (byte) ((packed[j] >>> i) & 3);
+                    upto++;
+                }
+            }
+            byte[] packedBytes = new byte[16];
+            upto = 0;
+            for (int i = 0; i < 8; i += 2) {
+                for (int j = 0; j < 16; j++) {
+                    packedBytes[j] = (byte) ((packedBytes[j] | (rawBytes[upto] << i)) & 0xFF);
+                    upto++;
+                }
+            }
+            Impl.unpackSimd2(packedBytes, unpacked);
+            int[] unpackedInts = new int[64];
+            ByteBuffer buff = ByteBuffer.wrap(unpacked);
+            for (int i = 0; i < 64; i++) {
+                unpackedInts[i] = buff.getInt();
+            }
+            assertArrayEquals(input, unpackedInts);
             assertArrayEquals(input, copy);
+        }
+    }
+
+//    @Test
+    public void unpackSimdBytes() {
+        System.out.println("Seed: " + seed);
+        Random random = new Random(seed);
+        byte[] packed = new byte[16];
+        byte[] unpacked = new byte[64 * 4];
+        int[] unpackedInts = new int[64];
+        for (int iter = 0; iter < 100; iter++) {
+            int[] input = IntStream.range(0, 64).map(x -> random.nextInt(4)).toArray();
+            int[] copy = Arrays.copyOf(input, input.length);
+            Arrays.fill(packed, (byte) 0);
+            Arrays.fill(unpacked, (byte) 0);
+            Impl.packBasicToBytes(input, packed);
+            Impl.unpackSimd2(packed, unpacked);
+            asInts(unpacked, unpackedInts);
+            assertArrayEquals(input, unpackedInts);
+            assertArrayEquals(input, copy);
+        }
+    }
+
+    private void asInts(byte[] bytes, int[] ints) {
+        ByteBuffer buff = ByteBuffer.wrap(bytes);
+        for (int i = 0; i < 64; i++) {
+            ints[i] = buff.getInt();
         }
     }
 }
