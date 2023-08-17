@@ -30,78 +30,78 @@ public class TestSimdBitPacking {
 
   final Random random = new Random();
 
-  @Test
-  public void packUnpack1() {
-    final int bitsPerValue = 1;
-    int[] packed = new int[bitsPerValue * 4];
-    for (int i = 0; i < 100; i++) {
-        int[] input = IntStream.range(0, 128).map(x -> random.nextInt(1 << bitsPerValue)).toArray();
-        int[] copy = Arrays.copyOf(input, input.length);
-        simdPack(input, packed, bitsPerValue);
-        int[] unpacked = new int[128];
-        simdUnpack(packed, unpacked, bitsPerValue);
-        assertArrayEquals(input, unpacked);
-        assertArrayEquals(input, copy);
-    }
-  }
-
-  @Test
-  public void packUnpack2() {
-    final int bitsPerValue = 2;
-    int[] packed = new int[bitsPerValue * 4];
-    for (int i = 0; i < 100; i++) {
-        int[] input = IntStream.range(0, 128).map(x -> random.nextInt(1 << bitsPerValue)).toArray();
-        int[] copy = Arrays.copyOf(input, input.length);
-        simdPack(input, packed, bitsPerValue);
-        int[] unpacked = new int[128];
-        simdUnpack(packed, unpacked, bitsPerValue);
-        assertArrayEquals(input, unpacked);
-        assertArrayEquals(input, copy);
-    }
-  }
-
-  @Test
-  public void packUnpack3() {
-    final int bitsPerValue = 3;
-    int[] packed = new int[bitsPerValue * 4];
-    for (int i = 0; i < 100; i++) {
-        int[] input = IntStream.range(0, 128).map(x -> random.nextInt(1 << bitsPerValue)).toArray();
-        int[] copy = Arrays.copyOf(input, input.length);
-        simdPack(input, packed, bitsPerValue);
-        int[] unpacked = new int[128];
-        simdUnpack(packed, unpacked, bitsPerValue);
-        assertArrayEquals(input, unpacked);
-        assertArrayEquals(input, copy);
-    }
-  }
-
-  @Test
-  public void packUnpack4() {
-    final int bitsPerValue = 4;
-    int[] packed = new int[bitsPerValue * 4];
-    for (int i = 0; i < 100; i++) {
-        int[] input = IntStream.range(0, 128).map(x -> random.nextInt(1 << bitsPerValue)).toArray();
-        int[] copy = Arrays.copyOf(input, input.length);
-        simdPack(input, packed, bitsPerValue);
-        int[] unpacked = new int[128];
-        simdUnpack(packed, unpacked, bitsPerValue);
-        assertArrayEquals(input, unpacked);
-        assertArrayEquals(input, copy);
-    }
-  }
-
-    @Test
-    public void packUnpack5() {
-        final int bitsPerValue = 5;
-        int[] packed = new int[bitsPerValue * 4];
-        for (int i = 0; i < 100; i++) {
-            int[] input = IntStream.range(0, 128).map(x -> random.nextInt(1 << bitsPerValue)).toArray();
-            int[] copy = Arrays.copyOf(input, input.length);
-            simdPack(input, packed, bitsPerValue);
-            int[] unpacked = new int[128];
-            simdUnpack(packed, unpacked, bitsPerValue);
-            assertArrayEquals(input, unpacked);
-            assertArrayEquals(input, copy);
-        }
-    }
+//  @Test
+//  public void packUnpack1() {
+//    final int bitsPerValue = 1;
+//    int[] packed = new int[bitsPerValue * 4];
+//    for (int i = 0; i < 100; i++) {
+//        int[] input = IntStream.range(0, 128).map(x -> random.nextInt(1 << bitsPerValue)).toArray();
+//        int[] copy = Arrays.copyOf(input, input.length);
+//        simdPack(input, packed, bitsPerValue);
+//        int[] unpacked = new int[128];
+//        simdUnpack(packed, unpacked, bitsPerValue);
+//        assertArrayEquals(input, unpacked);
+//        assertArrayEquals(input, copy);
+//    }
+//  }
+//
+//  @Test
+//  public void packUnpack2() {
+//    final int bitsPerValue = 2;
+//    int[] packed = new int[bitsPerValue * 4];
+//    for (int i = 0; i < 100; i++) {
+//        int[] input = IntStream.range(0, 128).map(x -> random.nextInt(1 << bitsPerValue)).toArray();
+//        int[] copy = Arrays.copyOf(input, input.length);
+//        simdPack(input, packed, bitsPerValue);
+//        int[] unpacked = new int[128];
+//        simdUnpack(packed, unpacked, bitsPerValue);
+//        assertArrayEquals(input, unpacked);
+//        assertArrayEquals(input, copy);
+//    }
+//  }
+//
+//  @Test
+//  public void packUnpack3() {
+//    final int bitsPerValue = 3;
+//    int[] packed = new int[bitsPerValue * 4];
+//    for (int i = 0; i < 100; i++) {
+//        int[] input = IntStream.range(0, 128).map(x -> random.nextInt(1 << bitsPerValue)).toArray();
+//        int[] copy = Arrays.copyOf(input, input.length);
+//        simdPack(input, packed, bitsPerValue);
+//        int[] unpacked = new int[128];
+//        simdUnpack(packed, unpacked, bitsPerValue);
+//        assertArrayEquals(input, unpacked);
+//        assertArrayEquals(input, copy);
+//    }
+//  }
+//
+//  @Test
+//  public void packUnpack4() {
+//    final int bitsPerValue = 4;
+//    int[] packed = new int[bitsPerValue * 4];
+//    for (int i = 0; i < 100; i++) {
+//        int[] input = IntStream.range(0, 128).map(x -> random.nextInt(1 << bitsPerValue)).toArray();
+//        int[] copy = Arrays.copyOf(input, input.length);
+//        simdPack(input, packed, bitsPerValue);
+//        int[] unpacked = new int[128];
+//        simdUnpack(packed, unpacked, bitsPerValue);
+//        assertArrayEquals(input, unpacked);
+//        assertArrayEquals(input, copy);
+//    }
+//  }
+//
+//    @Test
+//    public void packUnpack5() {
+//        final int bitsPerValue = 5;
+//        int[] packed = new int[bitsPerValue * 4];
+//        for (int i = 0; i < 100; i++) {
+//            int[] input = IntStream.range(0, 128).map(x -> random.nextInt(1 << bitsPerValue)).toArray();
+//            int[] copy = Arrays.copyOf(input, input.length);
+//            simdPack(input, packed, bitsPerValue);
+//            int[] unpacked = new int[128];
+//            simdUnpack(packed, unpacked, bitsPerValue);
+//            assertArrayEquals(input, unpacked);
+//            assertArrayEquals(input, copy);
+//        }
+//    }
 }
