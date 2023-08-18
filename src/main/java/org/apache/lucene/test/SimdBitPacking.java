@@ -61,6 +61,7 @@ public class SimdBitPacking {
   }
 
   private static final VectorSpecies<Integer> SPECIES_128 = IntVector.SPECIES_128;
+  private static final VectorSpecies<Integer> SPECIES_FLEX = IntVector.SPECIES_PREFERRED;
 
   // SIMD_fastpackwithoutmask1_32
   static void SIMD_fastPack1(int[] input, int[] output) {
@@ -380,6 +381,49 @@ public class SimdBitPacking {
 
     outVec = inVec.lanewise(VectorOperators.LSHL, 29).or(outVec);
     outVec.intoArray(output, outOff);
+  }
+
+  static void SIMD_fastPack4_Flex(int[] input, int[] output) {
+    assert input.length == 128;
+    assert output.length == 16;
+
+    IntVector inVec;
+    IntVector outVec;
+
+    int off = 0;
+
+    int lanes = SPECIES_FLEX.length();
+    assert 16 % lanes == 0;
+    int bound = 16 / lanes;
+    for (int i = 0; i < bound; i++) {
+      inVec = IntVector.fromArray(SPECIES_FLEX, input, off);
+      outVec = inVec;
+
+      inVec = IntVector.fromArray(SPECIES_FLEX, input, off + 16);
+      outVec = inVec.lanewise(VectorOperators.LSHL, 4).or(outVec);
+
+      inVec = IntVector.fromArray(SPECIES_FLEX, input, off + 32);
+      outVec = inVec.lanewise(VectorOperators.LSHL, 8).or(outVec);
+
+      inVec = IntVector.fromArray(SPECIES_FLEX, input, off + 48);
+      outVec = inVec.lanewise(VectorOperators.LSHL, 12).or(outVec);
+
+      inVec = IntVector.fromArray(SPECIES_FLEX, input, off + 64);
+      outVec = inVec.lanewise(VectorOperators.LSHL, 16).or(outVec);
+
+      inVec = IntVector.fromArray(SPECIES_FLEX, input, off + 80);
+      outVec = inVec.lanewise(VectorOperators.LSHL, 20).or(outVec);
+
+      inVec = IntVector.fromArray(SPECIES_FLEX, input, off + 96);
+      outVec = inVec.lanewise(VectorOperators.LSHL, 24).or(outVec);
+
+      inVec = IntVector.fromArray(SPECIES_FLEX, input, off + 112);
+      outVec = inVec.lanewise(VectorOperators.LSHL, 28).or(outVec);
+
+      outVec.intoArray(output, off);
+
+      off += lanes;
+    }
   }
 
   // SIMD_fastpackwithoutmask4_32
@@ -771,6 +815,51 @@ public class SimdBitPacking {
 
     outVec = inVec.lanewise(VectorOperators.LSHR, 29).and(mask);
     outVec.intoArray(output, outOff+=4);
+  }
+
+  static void SIMD_fastUnpack4_Flex(int[] input, int[] output) {
+    IntVector inVec;
+    IntVector outVec;
+
+    int inOff = 0;
+    int outOff;
+
+    final int INT_MASK = (1 << 3) - 1;
+
+    int lanes = SPECIES_FLEX.length();
+    assert 16 % lanes == 0;
+    int bound = 16 / lanes;
+    for (int i = 0; i < bound; i++) {
+      outOff = i * lanes;
+
+      inVec = IntVector.fromArray(SPECIES_FLEX, input, inOff);
+
+      outVec = inVec.and(INT_MASK);
+      outVec.intoArray(output, outOff);
+
+      outVec = inVec.lanewise(VectorOperators.LSHR, 4).and(INT_MASK);
+      outVec.intoArray(output, outOff + 16);
+
+      outVec = inVec.lanewise(VectorOperators.LSHR, 8).and(INT_MASK);
+      outVec.intoArray(output, outOff + 32);
+
+      outVec = inVec.lanewise(VectorOperators.LSHR, 12).and(INT_MASK);
+      outVec.intoArray(output, outOff + 48);
+
+      outVec = inVec.lanewise(VectorOperators.LSHR, 16).and(INT_MASK);
+      outVec.intoArray(output, outOff + 64);
+
+      outVec = inVec.lanewise(VectorOperators.LSHR, 20).and(INT_MASK);
+      outVec.intoArray(output, outOff + 80);
+
+      outVec = inVec.lanewise(VectorOperators.LSHR, 24).and(INT_MASK);
+      outVec.intoArray(output, outOff + 96);
+
+      outVec = inVec.lanewise(VectorOperators.LSHR, 28).and(INT_MASK);
+      outVec.intoArray(output, outOff + 112);
+
+      inOff += lanes;
+    }
   }
 
   // __SIMD_fastunpack4_32

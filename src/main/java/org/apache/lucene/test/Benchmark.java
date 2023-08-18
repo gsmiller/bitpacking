@@ -32,6 +32,7 @@ public class Benchmark {
 
   private final int[] ints = new int[128];
   private final int[] intsPacked = new int[16];
+  private final int[] intsPackedFlex = new int[16];
   private final long[] longs = new long[128];
   private final long[] longsPacked = new long[8];
 
@@ -51,6 +52,7 @@ public class Benchmark {
       longs[i] = ThreadLocalRandom.current().nextLong();
     }
     SimdBitPacking.simdPack(ints, intsPacked, 4);
+    SimdBitPacking.SIMD_fastPack4_Flex(ints, intsPackedFlex);
     forUtil.encode(longs, 4, longsPacked);
   }
 
@@ -60,7 +62,7 @@ public class Benchmark {
     return scratchLongsPacked;
   }
 
-  @org.openjdk.jmh.annotations.Benchmark
+//  @org.openjdk.jmh.annotations.Benchmark
   public long[] decode4ForUtil() throws IOException {
     forUtil.decode(4, longs, scratchLongsUnpacked);
     return scratchLongsUnpacked;
@@ -75,6 +77,19 @@ public class Benchmark {
   @org.openjdk.jmh.annotations.Benchmark
   public int[] decode4Simd() throws IOException {
     SimdBitPacking.simdUnpack(intsPacked, scratchIntsUnpacked, 4);
+    return scratchIntsUnpacked;
+  }
+
+  @org.openjdk.jmh.annotations.Benchmark
+  public int[] encode4SimdFlex() {
+    SimdBitPacking.SIMD_fastPack4_Flex(ints, scratchIntsPacked);
+    return scratchIntsPacked;
+  }
+
+
+  @org.openjdk.jmh.annotations.Benchmark
+  public int[] decode4SimdFlex() {
+    SimdBitPacking.SIMD_fastUnpack4_Flex(intsPackedFlex, scratchIntsUnpacked);
     return scratchIntsUnpacked;
   }
 }
