@@ -30,85 +30,51 @@ import java.util.concurrent.TimeUnit;
 @Fork(value = 1, jvmArgsPrepend = {"--add-modules=jdk.incubator.vector"})
 public class Benchmark {
 
-  private int[] ints;
-  private int[] intsOutput = new int[32];
-  private long[] longs;
+  private final int[] ints = new int[128];
+  private final int[] intsPacked = new int[16];
+  private final long[] longs = new long[128];
+  private final long[] longsPacked = new long[8];
+
+  private final int[] scratchIntsPacked = new int[16];
+  private final int[] scratchIntsUnpacked = new int[128];
+  private final long[] scratchLongsPacked = new long[8];
+  private final long[] scratchLongsUnpacked = new long[128];
 
   final ForUtil forUtil = new ForUtil();
 
   @Setup(Level.Trial)
-  public void init() {
-    ints = new int[128];
+  public void init() throws IOException {
     for (int i = 0; i < 128; i++) {
       ints[i] = ThreadLocalRandom.current().nextInt();
     }
-    longs = new long[128];
     for (int i = 0; i < 128; i++) {
       longs[i] = ThreadLocalRandom.current().nextLong();
     }
+    SimdBitPacking.simdPack(ints, intsPacked, 4);
+    forUtil.encode(longs, 4, longsPacked);
   }
 
-  @org.openjdk.jmh.annotations.Benchmark
-  public long[] encode1ForUtil() throws IOException {
-     forUtil.encode(longs, 1, longs);
-     return longs;
-  }
-
-  @org.openjdk.jmh.annotations.Benchmark
-  public int[] encode1SimdPack() throws IOException {
-    SimdBitPacking.simdPack(ints, intsOutput, 1);
-    return intsOutput;
-  }
-
-  @org.openjdk.jmh.annotations.Benchmark
-  public long[] encode2ForUtil() throws IOException {
-    forUtil.encode(longs, 2, longs);
-    return longs;
-  }
-
-  @org.openjdk.jmh.annotations.Benchmark
-  public int[] encode2SimdPack() throws IOException {
-    SimdBitPacking.simdPack(ints, intsOutput, 2);
-    return intsOutput;
-  }
-
-  @org.openjdk.jmh.annotations.Benchmark
-  public long[] encode3ForUtil() throws IOException {
-    forUtil.encode(longs, 3, longs);
-    return longs;
-  }
-
-  @org.openjdk.jmh.annotations.Benchmark
-  public int[] encode3SimdPack() throws IOException {
-    SimdBitPacking.simdPack(ints, intsOutput, 3);
-    return intsOutput;
-  }
-
-  @org.openjdk.jmh.annotations.Benchmark
+//  @org.openjdk.jmh.annotations.Benchmark
   public long[] encode4ForUtil() throws IOException {
-    forUtil.encode(longs, 4, longs);
-    return longs;
+    forUtil.encode(longs, 4, scratchLongsPacked);
+    return scratchLongsPacked;
   }
 
   @org.openjdk.jmh.annotations.Benchmark
-  public int[] encode4SimdPack() throws IOException {
-    SimdBitPacking.simdPack(ints, intsOutput, 4);
-    return intsOutput;
+  public long[] decode4ForUtil() throws IOException {
+    forUtil.decode(4, longs, scratchLongsUnpacked);
+    return scratchLongsUnpacked;
+  }
+
+//  @org.openjdk.jmh.annotations.Benchmark
+  public int[] encode4Simd() throws IOException {
+    SimdBitPacking.simdPack(ints, scratchIntsPacked, 4);
+    return scratchIntsPacked;
   }
 
   @org.openjdk.jmh.annotations.Benchmark
-  public long[] encode5ForUtil() throws IOException {
-    forUtil.encode(longs, 5, longs);
-    return longs;
+  public int[] decode4Simd() throws IOException {
+    SimdBitPacking.simdUnpack(intsPacked, scratchIntsUnpacked, 4);
+    return scratchIntsUnpacked;
   }
-
-  @org.openjdk.jmh.annotations.Benchmark
-  public int[] encode5SimdPack() throws IOException {
-    SimdBitPacking.simdPack(ints, intsOutput, 5);
-    return intsOutput;
-  }
-
-  // TODO decode/unpack
-  // TODO: 6 .. 32
-
 }
