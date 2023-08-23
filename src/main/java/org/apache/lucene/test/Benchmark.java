@@ -60,6 +60,97 @@ public class Benchmark {
   private static final long MASK = 0x0FL;
   private static final long MASK84 = 0X0F0F0F0F0F0F0F0FL;
 
+  // OK so it looks like it doesn't auto-vectorize if there are >= 12 operations in the loop?
+  // Also looks like it doesn't vectorize will smaller loops (e.g., i < 8)? Seems like 11 is the
+  // magic number here too??? Huh?
+  @org.openjdk.jmh.annotations.Benchmark
+  public long[] shiftBy4() {
+    for (int i = 0; i < 11; ++i) {
+      long l = longs[i];
+//      scratchLongsUnpacked[i] = (l >>> 60) & 0x0FL;
+      scratchLongsUnpacked[i + 8] = (l >>> 56) & 0x0FL;
+      scratchLongsUnpacked[i + 16] = (l >>> 52) & 0x0FL;
+      scratchLongsUnpacked[i + 24] = (l >>> 48) & 0x0FL;
+      scratchLongsUnpacked[i + 32] = (l >>> 44) & 0x0FL;
+      scratchLongsUnpacked[i + 40] = (l >>> 40) & 0x0FL;
+      scratchLongsUnpacked[i + 48] = (l >>> 36) & 0x0FL;
+//      scratchLongsUnpacked[i + 56] = (l >>> 32) & 0x0FL;
+      scratchLongsUnpacked[i + 64] = (l >>> 28) & 0x0FL;
+      scratchLongsUnpacked[i + 72] = (l >>> 24) & 0x0FL;
+      scratchLongsUnpacked[i + 80] = (l >>> 20) & 0x0FL;
+      scratchLongsUnpacked[i + 88] = (l >>> 16) & 0x0FL;
+      scratchLongsUnpacked[i + 96] = (l >>> 12) & 0x0FL;
+      scratchLongsUnpacked[i + 104] = (l >>> 8) & 0x0FL;
+//      scratchLongsUnpacked[i + 112] = (l >>> 4) & 0x0FL;
+//      scratchLongsUnpacked[i + 120] = l & 0x0FL;
+    }
+
+    return scratchLongsUnpacked;
+  }
+
+//  @org.openjdk.jmh.annotations.Benchmark
+  public long[] shiftBy4_v2() {
+//    shifty(longs, scratchLongsUnpacked, 0);
+//    shifty(longs, scratchLongsUnpacked, 64);
+    for (int i = 0; i < 8; ++i) {
+      long l = longs[i];
+      scratchLongsUnpacked[i] = (l >>> 60) & 0x0FL;
+      scratchLongsUnpacked[i + 8] = (l >>> 56) & 0x0FL;
+      scratchLongsUnpacked[i + 16] = (l >>> 52) & 0x0FL;
+      scratchLongsUnpacked[i + 24] = (l >>> 48) & 0x0FL;
+      scratchLongsUnpacked[i + 32] = (l >>> 44) & 0x0FL;
+      scratchLongsUnpacked[i + 40] = (l >>> 40) & 0x0FL;
+      scratchLongsUnpacked[i + 48] = (l >>> 36) & 0x0FL;
+      scratchLongsUnpacked[i + 56] = (l >>> 32) & 0x0FL;
+    }
+
+//    for (int i = 0; i < 16; ++i) {
+//      long l = longs[i];
+//      scratchLongsUnpacked[i + 56] = (l >>> 32) & 0x0FL;
+//      scratchLongsUnpacked[i + 64] = (l >>> 28) & 0x0FL;
+//      scratchLongsUnpacked[i + 72] = (l >>> 24) & 0x0FL;
+//      scratchLongsUnpacked[i + 80] = (l >>> 20) & 0x0FL;
+//      scratchLongsUnpacked[i + 88] = (l >>> 16) & 0x0FL;
+//      scratchLongsUnpacked[i + 96] = (l >>> 12) & 0x0FL;
+//      scratchLongsUnpacked[i + 104] = (l >>> 8) & 0x0FL;
+//      scratchLongsUnpacked[i + 112] = (l >>> 4) & 0x0FL;
+////      scratchLongsUnpacked[i + 120] = l & 0x0FL;
+//    }
+
+    return scratchLongsUnpacked;
+  }
+
+  private static void shifty(long[] in, long[] out, int base) {
+    for (int i = 0; i < 8; ++i) {
+      long l = in[i];
+      out[base + i] = (l >>> 60) & 0x0FL;
+      out[base + i + 8] = (l >>> 56) & 0x0FL;
+      out[base + i + 16] = (l >>> 52) & 0x0FL;
+      out[base + i + 24] = (l >>> 48) & 0x0FL;
+      out[base + i + 32] = (l >>> 44) & 0x0FL;
+      out[base + i + 40] = (l >>> 40) & 0x0FL;
+      out[base + i + 48] = (l >>> 36) & 0x0FL;
+      out[base + i + 56] = (l >>> 32) & 0x0FL;
+    }
+  }
+
+//  @org.openjdk.jmh.annotations.Benchmark
+  public long[] shiftBy8() {
+    for (int i = 0; i < 16; ++i) {
+      long l = longs[i];
+      scratchLongsUnpacked[i] = (l >>> 56) & 0xFFL;
+      scratchLongsUnpacked[16 + i] = (l >>> 48) & 0xFFL;
+      scratchLongsUnpacked[32 + i] = (l >>> 40) & 0xFFL;
+      scratchLongsUnpacked[48 + i] = (l >>> 32) & 0xFFL;
+      scratchLongsUnpacked[64 + i] = (l >>> 24) & 0xFFL;
+      scratchLongsUnpacked[80 + i] = (l >>> 16) & 0xFFL;
+      scratchLongsUnpacked[96 + i] = (l >>> 8) & 0xFFL;
+      scratchLongsUnpacked[112 + i] = l & 0xFFL;
+    }
+
+    return scratchLongsUnpacked;
+  }
+
 //  @org.openjdk.jmh.annotations.Benchmark
   public long[] decode4ModifiedForUtil() throws IOException {
     int outUpto = 0;
@@ -130,7 +221,7 @@ public class Benchmark {
     return scratchLongsUnpacked;
   }
 
-  @org.openjdk.jmh.annotations.Benchmark
+//  @org.openjdk.jmh.annotations.Benchmark
   public long[] decode4ModifiedForUtil4() throws IOException {
     for (int i = 0; i < 8; ++i) {
       long l = longsPacked[i];
@@ -157,7 +248,7 @@ public class Benchmark {
 
   private final long[] tmp = new long[16];
 
-  @org.openjdk.jmh.annotations.Benchmark
+//  @org.openjdk.jmh.annotations.Benchmark
   public long[] decode4ForUtilReplica() throws IOException {
     for (int i = 0; i < 8; ++i) {
       tmp[i] = (longsPacked[i] >>> 4) & MASK84;
